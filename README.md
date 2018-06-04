@@ -9,3 +9,7 @@ https://www.kaggle.com/carrie1/ecommerce-data
 
 classification.py is an example of ML using this dataset
 https://www.kaggle.com/rhobear/machine-learning-started-learning-3-months-ago/data
+
+The below link was used to start project.py
+https://blog.sicara.com/naive-bayes-classifier-sklearn-python-example-tips-42d100429e44
+
