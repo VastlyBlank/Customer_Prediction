@@ -4,6 +4,11 @@
 import pandas as pd
 import numpy as np
 
+# Settings to be able to print all the columns of data set
+pd.set_option("display.max_columns", 15)
+pd.set_option("display.width", 200)
+
+
 df = pd.read_csv('ecommerce_data.csv', encoding="ISO-8859-1", dtype={'CustomerID': str, 'InvoiceID': str})
 
 dfsales = df.groupby('Description')['UnitPrice'].sum()
@@ -11,13 +16,13 @@ dfsales = pd.DataFrame(dfsales)
 dfsales = dfsales.sort_values('UnitPrice', ascending=False)
 dfsales['Description'] = dfsales.index
 
-dfsales = dfsales[0:10]  # Memory issues after 500 products. UPDATED, KAGGLE IS MUCH FASTER
+dfsales = dfsales[0:100]  # Memory issues after 500 products. UPDATED, KAGGLE IS MUCH FASTER
 
 columns_to_keep = ['Description', 'CustomerID']
 df1 = df[columns_to_keep]
 uniqueproducts = dfsales['Description'].unique()
 
-halfproducts = uniqueproducts[4:10]  # Memory issues after 500 products. UPDATED, KAGGLE IS MUCH FASTER
+halfproducts = uniqueproducts[4:100]  # Memory issues after 500 products. UPDATED, KAGGLE IS MUCH FASTER
 df1 = df1.where(df1['Description'].isin(halfproducts)).dropna()
 df1 = df1.set_index('CustomerID')
 
@@ -88,7 +93,7 @@ columnvalues = newdf.columns.values
 columnvalues = columnvalues[0:-1]
 
 for column, name in enumerate(columnvalues):
-    print('predicting product number: ', column, ':', name)
+    #print('predicting product number: ', column, ':', name)
 
     columntotest = column
     excludedcolumn = newdf.columns.values[columntotest]
@@ -120,11 +125,9 @@ for column, name in enumerate(columnvalues):
 
     # Organize all customers, probabilities, products, and scores into a dataframe
 
-
-
 finaldf = pd.DataFrame(
     {'Customer': mastervaluelist, 'Recommendation': masterproductlist, 'Probability': masterprobabilitylist})
-print(finaldf)
+
 finalfinaldf = pd.merge(finaldf, accuracydf, on='Recommendation', how='outer')
 finalfinaldf.sort_values(['Customer', 'Score'], ascending=False)
 
@@ -133,3 +136,5 @@ finalfinaldf['WeightedScore'] = finalfinaldf['Probability'] * finalfinaldf['Scor
 finalfinaldf = finalfinaldf.where(finalfinaldf['WeightedScore'] != 0).dropna().sort_values(
     ['Customer', 'WeightedScore'], ascending=False)
 finalfinaldf.groupby('Customer').head(3)
+
+print(finalfinaldf)
