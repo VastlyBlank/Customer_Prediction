@@ -3,6 +3,7 @@
 
 import pandas as pd
 import numpy as np
+from copy import deepcopy
 from collections import Counter
 import matplotlib.pyplot as plt
 import time
@@ -12,25 +13,31 @@ from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 # Settings to be able to print all the columns of data set
 pd.set_option("display.max_columns", 15)
 pd.set_option("display.width", 200)
+pd.options.display.max_rows = 400
 
 # Import data file. testdata.csv was scrubbed to remove StockCodes with letters, negative quantities,
 # and blank descriptions.
 df = pd.read_csv('testdata.csv', encoding="ISO-8859-1", dtype={'CustomerID': str, 'InvoiceID': str})
-
-dataset = df[["ChristmasBag", "StockCode", "Description", "Quantity", "UnitPrice", "CustomerID"]].dropna(axis=0, how='any')
-
-print(len(dataset))
-
-purchased = []
-for i in range(len(dataset)):
-    purchased.append(1)
+dataset = df[["ChristmasBag", "InvoiceNo", "StockCode", "Description", "Quantity", "UnitPrice", "CustomerID"]].dropna(axis=0, how='any')
 
 # Data set of how much of each item each customers purchased.
-# Note that the ChristmasBag field is the count of each item.
-customerDataset = dataset[["ChristmasBag", "StockCode", "CustomerID"]]
-customerDataset["PurchasedCount"] = purchased
-customerDataset = customerDataset.groupby(["CustomerID", "StockCode"]).count()
-print(customerDataset)
+customerDataset = deepcopy(dataset[["ChristmasBag", "InvoiceNo", "StockCode", "CustomerID"]])
+# Add a column to hold a value to count for being purchased
+customerDataset = customerDataset.reindex(columns=np.append(customerDataset.columns.values, "PurchasedCount"))
+# If there is a line in data set, the item was purchased. So set all columns to 1.
+customerDataset["PurchasedCount"] = 1
+#customerDataset = customerDataset.drop(["ChristmasBag"], axis=1)
+#print(type(customerDataset["CustomerID"]
+
+# Get list of each customer, with the items and how many times those items were purchased.
+customerDataset = customerDataset.groupby(["CustomerID", "InvoiceNo"]).count().reset_index()
+
+# The below prints the customer purchasing frequency information by stock iteme
+# Inside the brackets customize what rows are printed. [X:Y], where X is start row
+# and Y is end row
+#print(customerDataset.iloc[0:10])
+
+print(customerDataset.loc[customerDataset["CustomerID"] == '12347'])
 
 # Reduced data set size for faster testing, will expand to full data set eventually
 dataset = dataset[0:]
