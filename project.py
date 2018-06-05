@@ -21,33 +21,39 @@ df = pd.read_csv('testdata.csv', encoding="ISO-8859-1", dtype={'CustomerID': str
 dataset = df[["ChristmasBag", "InvoiceNo", "StockCode", "Description", "Quantity", "UnitPrice", "CustomerID"]].dropna(axis=0, how='any')
 
 # Data set of how much of each item each customers purchased.
-customerDataset = deepcopy(dataset[["ChristmasBag", "InvoiceNo", "StockCode", "CustomerID"]])
+customerDataset = deepcopy(dataset[["StockCode", "ChristmasBag", "InvoiceNo", "CustomerID"]])
 # Add a column to hold a value to count for being purchased
-customerDataset = customerDataset.reindex(columns=np.append(customerDataset.columns.values, "PurchasedCount"))
+customerDataset = customerDataset.reindex(columns=np.append(customerDataset.columns.values, "Count"))
 # If there is a line in data set, the item was purchased. So set all columns to 1.
-customerDataset["PurchasedCount"] = 1
-#customerDataset = customerDataset.drop(["ChristmasBag"], axis=1)
-#print(type(customerDataset["CustomerID"]
+customerDataset["Count"] = 1
+customerDataset = customerDataset[customerDataset.StockCode != 23437]
+customerDataset = customerDataset[customerDataset.StockCode != 23375]
+
 
 # Get list of each customer, with the items and how many times those items were purchased.
-customerDataset = customerDataset.groupby(["CustomerID", "InvoiceNo"]).count().reset_index()
+customerDataset = customerDataset.groupby(["ChristmasBag", "StockCode"]).count().reset_index()
 
+customerDataset = customerDataset.sort_values(by=['StockCode', 'ChristmasBag'])
 # The below prints the customer purchasing frequency information by stock iteme
 # Inside the brackets customize what rows are printed. [X:Y], where X is start row
 # and Y is end row
-#print(customerDataset.iloc[0:10])
+#customerDataset = customerDataset.drop(["ChristmasBag"], axis=1)
 
-print(customerDataset.loc[customerDataset["CustomerID"] == '12347'])
+customerDataset = customerDataset[["StockCode", "Count"]]
+
+#print(customerDataset.iloc[0:10])
 
 # Reduced data set size for faster testing, will expand to full data set eventually
 dataset = dataset[0:]
 
 # Splits data into training and test sets
 X_train, X_test = train_test_split(dataset, test_size=0.5, random_state=int(time.time()))
+#X_train, X_test = train_test_split(customerDataset, test_size=0.5, random_state=int(time.time()))
 
 # Set up bayes classifier
 gnb = GaussianNB()
-used_features = ["ChristmasBag", "StockCode", "Quantity", "UnitPrice", "CustomerID"]
+#used_features = ["ChristmasBag", "StockCode", "Quantity", "UnitPrice", "CustomerID"]
+used_features = ["ChristmasBag", "StockCode"]
 gnb.fit(X_train[used_features].values, X_train["ChristmasBag"])
 y_pred = gnb.predict(X_test[used_features])
 
