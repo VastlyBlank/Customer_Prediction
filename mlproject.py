@@ -2,9 +2,9 @@ import pandas as pd
 from copy import deepcopy
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
-from sklearn import metrics
 from sklearn import tree
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn import metrics
 
 '''Settings to be able to print all the columns of data set'''
 pd.set_option("display.max_columns", 15)
@@ -36,7 +36,7 @@ stCode = 22802
 # GNB for giftBag predictions
 gnb = MultinomialNB()
 
-# GNB for CountryCode Prediction
+# GNB for CountryCode predictions
 gnb2 = MultinomialNB()
 
 # Fit both sets
@@ -46,13 +46,16 @@ gnb2.fit(trainset[used_features2].values, trainset["CountryCode"])
 # giftBag predictions
 y_pred = gnb.predict(testset[used_features])
 
-# Predict Country Code
+# Predict CountryCode
 y_pred2 = gnb2.predict(stCode)
-# Used for Accuracy
+
+# Used for accuracy
 y_pred3 = gnb2.predict(testset[used_features2])
 
-# Accuracy of Predictions
+# Accuracy of giftBag predictions
 yacc = metrics.accuracy_score(testset["giftBag"], y_pred)
+
+# Accuracy of CountryCode predictions
 yacc2 = metrics.accuracy_score(testset["CountryCode"], y_pred3)
 
 '''Decision Tree'''
@@ -69,38 +72,43 @@ tree_stuff2.fit(trainset[used_features2].values, trainset["CountryCode"])
 # giftBag predictions
 t_pred = tree_stuff.predict(testset[used_features])
 
-# Predict Country Code
+# Predict CountryCode
 t_pred2 = tree_stuff2.predict(stCode)
-# Used for CountryCode Accuracy
+
+# Used for CountryCode accuracy
 t_pred3 = tree_stuff2.predict(testset[used_features2])
 
-# Accuracy of Predictions
+# Accuracy of giftBag predictions
 tacc = metrics.accuracy_score(testset["giftBag"], t_pred)
+
+# Accuracy of CountryCode predictions
 tacc2 = metrics.accuracy_score(testset["CountryCode"], t_pred3)
 
 '''K-NN'''
 # KNN for giftBag predictions
 knn = KNeighborsClassifier(n_neighbors=1)
 
-# KNN for CountryCode Prediction
+# KNN for CountryCode predictions
 knn2 = KNeighborsClassifier(n_neighbors=1)
 
 # Fit both sets
 knn.fit(trainset[used_features].values, trainset["giftBag"])
 knn2.fit(trainset[used_features2].values, trainset["CountryCode"])
 
-
 # giftBag predictions
 k_pred = knn.predict(testset[used_features])
-# Predict Country Code
+
+# Predict CountryCode
 k_pred2 = knn2.predict(stCode)
-# Used for CountryCode Accuracy
+
+# Used for CountryCode accuracy
 k_pred3 = knn2.predict(testset[used_features2])
 
-# Accuracy of giftBag Predictions
+# Accuracy of giftBag predictions
 knnacc = metrics.accuracy_score(testset["giftBag"], k_pred)
-knnacc2 = metrics.accuracy_score(testset["CountryCode"], k_pred3)
 
+# Accuracy of CountryCode predictions
+knnacc2 = metrics.accuracy_score(testset["CountryCode"], k_pred3)
 
 '''Printing Results'''
 print("\nGift Bag Accuracy Results:")
@@ -117,4 +125,3 @@ print("\nCountryCode Accuracy Results:")
 print("GNB Accuracy: {0:.2f}%".format(yacc2*100))
 print("Decision Tree Accuracy: {0:.2f}%".format(tacc2*100))
 print("KNN Accuracy: {0:.2f}%".format(knnacc2*100))
-
