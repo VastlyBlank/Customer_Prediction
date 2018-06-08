@@ -6,15 +6,14 @@ from sklearn import tree
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import metrics
 
-'''Settings to be able to print all the columns of data set'''
+# Settings to be able to print all the columns of data set
 pd.set_option("display.max_columns", 15)
 pd.set_option("display.width", 200)
 pd.options.display.max_rows = 400
 
-'''
-    Import data file. testdata.csv was scrubbed to remove StockCodes with letters, 
-    negative quantities, and blank descriptions.
-'''
+
+# Import data file. testdata.csv was scrubbed to remove StockCodes with letters,
+# negative quantities, and blank descriptions.
 df = pd.read_csv('testdata2.csv', encoding="ISO-8859-1", dtype={'CustomerID': str, 'InvoiceID': str})
 dataset = df[["giftBag", "InvoiceNo", "StockCode", "Description", "Quantity", "InvoiceMonth",
               "UnitPrice", "CustomerID", "CountryCode"]].dropna(axis=0, how='any')
