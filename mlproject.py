@@ -26,79 +26,95 @@ rawdataset = deepcopy(dataset[["StockCode", "giftBag", "InvoiceNo", "Quantity", 
 trainset, testset = train_test_split(rawdataset, test_size=0.2, random_state=12)
 
 # Features used for our tests
-used_features = ["StockCode"]
-used_features2 = ["StockCode", "Quantity", "InvoiceMonth", "CountryCode"]
+used_features = ["StockCode", "Quantity", "InvoiceMonth", "CountryCode"]
+used_features2 = ["StockCode"]
 
 # Stock code used for CountryCode predictions
-stCode = 22902
+stCode = 22802
 
 '''Gaussian Bayes classifier'''
-# GNB for CountryCode Prediction
+# GNB for giftBag predictions
 gnb = MultinomialNB()
 
-# GNB for giftBag predictions
+# GNB for CountryCode Prediction
 gnb2 = MultinomialNB()
 
 # Fit both sets
-gnb.fit(trainset[used_features].values, trainset["CountryCode"])
-gnb2.fit(trainset[used_features2].values, trainset["giftBag"])
-
-# Predict Country Code
-y_pred = gnb.predict(stCode)
+gnb.fit(trainset[used_features].values, trainset["giftBag"])
+gnb2.fit(trainset[used_features2].values, trainset["CountryCode"])
 
 # giftBag predictions
-y_pred2 = gnb2.predict(testset[used_features2])
+y_pred = gnb.predict(testset[used_features])
 
-# Accuracy of giftBag Predictions
-yacc = metrics.accuracy_score(testset["giftBag"], y_pred2)
+# Predict Country Code
+y_pred2 = gnb2.predict(stCode)
+# Used for Accuracy
+y_pred3 = gnb2.predict(testset[used_features2])
+
+# Accuracy of Predictions
+yacc = metrics.accuracy_score(testset["giftBag"], y_pred)
+yacc2 = metrics.accuracy_score(testset["CountryCode"], y_pred3)
 
 '''Decision Tree'''
-# DT for CountryCode predictions
+# DT for giftBag predictions
 tree_stuff = tree.DecisionTreeClassifier()
 
-# DT for giftBag predictions
+# DT for CountryCode predictions
 tree_stuff2 = tree.DecisionTreeClassifier()
 
 # Fit both trees
-tree_stuff.fit(trainset[used_features].values, trainset["CountryCode"])
-tree_stuff2.fit(trainset[used_features2].values, trainset["giftBag"])
-
-# Predict Country Code
-t_pred = tree_stuff.predict(stCode)
+tree_stuff.fit(trainset[used_features].values, trainset["giftBag"])
+tree_stuff2.fit(trainset[used_features2].values, trainset["CountryCode"])
 
 # giftBag predictions
-t_pred2 = tree_stuff2.predict(testset[used_features2])
+t_pred = tree_stuff.predict(testset[used_features])
 
-# Accuracy of giftBag Predictions
-tacc = metrics.accuracy_score(testset["giftBag"], t_pred2)
+# Predict Country Code
+t_pred2 = tree_stuff2.predict(stCode)
+# Used for CountryCode Accuracy
+t_pred3 = tree_stuff2.predict(testset[used_features2])
+
+# Accuracy of Predictions
+tacc = metrics.accuracy_score(testset["giftBag"], t_pred)
+tacc2 = metrics.accuracy_score(testset["CountryCode"], t_pred3)
 
 '''K-NN'''
-# KNN for CountryCode Prediction
+# KNN for giftBag predictions
 knn = KNeighborsClassifier(n_neighbors=1)
 
-# KNN for giftBag predictions
+# KNN for CountryCode Prediction
 knn2 = KNeighborsClassifier(n_neighbors=1)
 
 # Fit both sets
-knn.fit(trainset[used_features].values, trainset["CountryCode"])
-knn2.fit(trainset[used_features2].values, trainset["giftBag"])
+knn.fit(trainset[used_features].values, trainset["giftBag"])
+knn2.fit(trainset[used_features2].values, trainset["CountryCode"])
 
-# Predict Country Code
-k_pred = knn.predict(stCode)
 
 # giftBag predictions
-k_pred2 = knn2.predict(testset[used_features2])
+k_pred = knn.predict(testset[used_features])
+# Predict Country Code
+k_pred2 = knn2.predict(stCode)
+# Used for CountryCode Accuracy
+k_pred3 = knn2.predict(testset[used_features2])
 
 # Accuracy of giftBag Predictions
-knnacc = metrics.accuracy_score(testset["giftBag"], k_pred2)
+knnacc = metrics.accuracy_score(testset["giftBag"], k_pred)
+knnacc2 = metrics.accuracy_score(testset["CountryCode"], k_pred3)
+
 
 '''Printing Results'''
-print("CountryCode Predictions:")
-print("GNB: ", y_pred)
-print("Decision Tree: ", t_pred)
-print("KNN: ", k_pred)
+print("\nGift Bag Accuracy Results:")
+print("GNB Accuracy: {0:.2f}%".format(yacc*100))
+print("Decision Tree Accuracy: {0:.2f}%".format(tacc*100))
+print("KNN Accuracy: {0:.2f}%".format(knnacc*100))
 
-print("\nAccuracy Results:")
-print("GNB giftBag Accuracy: ", int(yacc*100), "%")
-print("Decision Tree giftBag Accuracy: ", int(tacc*100), "%")
-print("KNN giftBag Accuracy: ", int(knnacc*100), "%")
+print("\nCountryCode Predictions:")
+print("GNB: ", y_pred2)
+print("Decision Tree: ", t_pred2)
+print("KNN: ", k_pred2)
+
+print("\nCountryCode Accuracy Results:")
+print("GNB Accuracy: {0:.2f}%".format(yacc2*100))
+print("Decision Tree Accuracy: {0:.2f}%".format(tacc2*100))
+print("KNN Accuracy: {0:.2f}%".format(knnacc2*100))
+
